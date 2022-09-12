@@ -1,0 +1,71 @@
+{{define "Index"}}
+
+{{template "_head"}}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <title>Login</title>
+</head>
+
+<body>
+    <!-- Section: Design Block -->
+    <section class="text-center">
+        <!-- Background image -->
+        <div class="p-5 bg-image"></div>
+        <!-- Background image -->
+
+        <div class="card mx-4 mx-md-5 shadow-5-strong" style="
+            margin-top: -100px;
+            background: hsla(0, 0%, 100%, 0.8);
+            backdrop-filter: blur(30px);
+            ">
+            <div class="card-body py-5 px-md-5">
+
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-8">
+                        <h2 class="fw-bold mb-5">Login</h2>
+                        <form>
+                            <!-- Email input -->
+                            <div class="form-outline mb-4">
+                                <input name="email" type="email" id="form3Example3" class="form-control" />
+                                <label class="form-label" for="form3Example3">Email address</label>
+                            </div>
+
+                            <!-- Password input -->
+                            <div class="form-outline mb-4">
+                                <input name="password" type="password" id="form3Example4" class="form-control" />
+                                <label class="form-label" for="form3Example4">Password</label>
+                            </div>
+
+                            <!-- Submit button -->
+                            <button type="submit" class="btn btn-primary btn-block mb-4">
+                                Login
+                            </button>
+
+                            <div>
+                                <p class="mb-0">Don't have an account? <a href="/signup"
+                                        class="text-blue-50 fw-bold">Sign
+                                        Up</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Section: Design Block -->
+</body>
+
+</html>
+{{end}}
