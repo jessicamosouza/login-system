@@ -6,7 +6,7 @@ import (
 	controllers "github.com/jessicamosouza/login-system/controllers"
 )
 
-func CarregaRotas() {
+func LoadRoutes() {
 	http.HandleFunc("/", controllers.Index)
 	http.HandleFunc("/signup", controllers.New)
 	http.HandleFunc("/insert", controllers.Insert)

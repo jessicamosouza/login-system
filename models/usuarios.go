@@ -1,6 +1,10 @@
 package models
 
-import "github.com/jessicamosouza/login-system/db"
+import (
+	"net/mail"
+
+	"github.com/jessicamosouza/login-system/db"
+)
 
 type User struct {
 	FirstName string `json:"fname" db:"firstname"`
@@ -11,6 +15,8 @@ type User struct {
 
 func SearchAllUsers() []User {
 	db := db.InitDB()
+	defer db.Close()
+
 	selectAllusers, err := db.Query("select * from users")
 	if err != nil {
 		panic(err.Error())
@@ -34,13 +40,13 @@ func SearchAllUsers() []User {
 
 		users = append(users, u)
 	}
-	defer db.Close()
 
 	return users
 }
 
-func NewUser(firstName, lastName, email, password string) {
+func InsertUser(firstName, lastName, password string, email *mail.Address) {
 	db := db.InitDB()
+	defer db.Close()
 
 	addUserDB, err := db.Prepare("insert into users (firstname, lastname, email, password)  values($1,$2,$3,$4)")
 	if err != nil {
@@ -48,6 +54,6 @@ func NewUser(firstName, lastName, email, password string) {
 	}
 
 	addUserDB.Exec(firstName, lastName, email, password)
+	// tratar erro
 
-	defer db.Close()
 }

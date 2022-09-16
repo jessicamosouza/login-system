@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/mail"
 
 	"github.com/jessicamosouza/login-system/models"
 )
@@ -26,13 +27,20 @@ func New(w http.ResponseWriter, r *http.Request) {
 }
 
 func Insert(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		fname := r.FormValue("fname")
-		lname := r.FormValue("lname")
-		email := r.FormValue("email")
-		password := r.FormValue("password")
+	var fname, lname, password string
 
-		models.NewUser(fname, lname, email, password)
+	if r.Method == "POST" {
+
+		fname = r.FormValue("fname")
+		lname = r.FormValue("lname")
+		email, err := mail.ParseAddress(r.FormValue("email"))
+		if err != nil {
+			log.Println("Invalid Email")
+		}
+
+		password = r.FormValue("password")
+
+		models.InsertUser(fname, lname, password, email)
 	}
 
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
