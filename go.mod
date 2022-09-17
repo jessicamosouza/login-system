@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/go-passwd/validator v0.0.0-20180902184246-0b4c967e436b // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang/mock v1.6.0 // indirect

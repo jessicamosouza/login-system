@@ -27,21 +27,29 @@ func New(w http.ResponseWriter, r *http.Request) {
 }
 
 func Insert(w http.ResponseWriter, r *http.Request) {
-	var fname, lname, password string
 
 	if r.Method == "POST" {
 
-		fname = r.FormValue("fname")
-		lname = r.FormValue("lname")
-		email, err := mail.ParseAddress(r.FormValue("email"))
-		if err != nil {
-			log.Println("Invalid Email")
-		}
+		fname := r.FormValue("fname")
+		lname := r.FormValue("lname")
 
-		password = r.FormValue("password")
+		email := checkEmail(w, r)
+
+		password := r.FormValue("password")
 
 		models.InsertUser(fname, lname, password, email)
 	}
 
+	// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
+
+func checkEmail(w http.ResponseWriter, r *http.Request) *mail.Address {
+	email, err := mail.ParseAddress(r.FormValue("email"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid email"))
+	}
+
+	return email
 }
