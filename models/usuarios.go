@@ -1,8 +1,6 @@
 package models
 
 import (
-	"net/mail"
-
 	"github.com/jessicamosouza/login-system/db"
 )
 
@@ -44,16 +42,17 @@ func SearchAllUsers() []User {
 	return users
 }
 
-func InsertUser(firstName, lastName, password string, email *mail.Address) {
+func InsertUser(firstName, lastName, email, password string) {
 	db := db.InitDB()
 	defer db.Close()
 
-	addUserDB, err := db.Prepare("insert into users (firstname, lastname, email, password)  values($1,$2,$3,$4)")
+	addUserDB, err := db.Prepare("insert into users(firstname, lastname, email, password)  values($1,$2,$3,$4)")
 	if err != nil {
 		panic(err.Error())
 	}
 
 	addUserDB.Exec(firstName, lastName, email, password)
-	// tratar erro
-
+	if err != nil {
+		panic(err.Error())
+	}
 }
