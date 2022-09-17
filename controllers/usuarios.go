@@ -34,17 +34,30 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
 		fname := r.FormValue("fname")
-		lname := r.FormValue("lname")
-		email := r.FormValue("email")
-		password := r.FormValue("password")
-
-		err := checkEmail(email)
+		err := checkName(fname)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Invalid email"))
+			w.Write([]byte("First name must contain at least 2 characters."))
 			return
 		}
 
+		lname := r.FormValue("lname")
+		err = checkName(lname)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Last name must contain at least 2 characters."))
+			return
+		}
+
+		email := r.FormValue("email")
+		err = checkEmail(email)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Invalid email."))
+			return
+		}
+
+		password := r.FormValue("password")
 		err = checkPassword(password)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -64,6 +77,15 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 
 	// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
+
+func checkName(name string) error {
+
+	if len(name) > 2 {
+		return nil
+	}
+	return errors.New("invalid name")
+
 }
 
 func checkEmail(email string) error {
