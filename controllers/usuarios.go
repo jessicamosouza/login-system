@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"fmt"
+	"errors"
 	"html/template"
 	"log"
 	"net/http"
 	"net/mail"
 
+	"github.com/go-passwd/validator"
 	"github.com/jessicamosouza/login-system/models"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -34,31 +35,53 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 
 		fname := r.FormValue("fname")
 		lname := r.FormValue("lname")
+		email := r.FormValue("email")
+		password := r.FormValue("password")
 
-		email := checkEmail(w, r)
-		password := checkPassword(w, r)
+		err := checkEmail(email)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Invalid email"))
+			return
+		}
 
-		models.InsertUser(fname, lname, email, password)
+		err = checkPassword(password)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		passwordHash, err := generateHash(password)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		models.InsertUser(fname, lname, email, passwordHash)
 	}
 
 	// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
-func checkEmail(w http.ResponseWriter, r *http.Request) string{
-	e, err := mail.ParseAddress(r.FormValue("email"))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid email"))
-	}
+func checkEmail(email string) error {
+	_, err := mail.ParseAddress(email)
 
-	return e.Address
+	return err
 }
 
-func checkPassword(w http.ResponseWriter, r *http.Request) string {
-	hash, err := bcrypt.GenerateFromPassword([]byte(r.FormValue("password")), 14)
-	if err != nil {
-		log.Println(err)
-	}
-	return string(hash)
+func checkPassword(password string) error {
+	passwordValidator := validator.New(validator.Regex("^&&w+$", errors.New("invalid password")))
+
+	return passwordValidator.Validate(password)
+
+}
+
+func generateHash(password string) (string, error) {
+	const cost = 14
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), cost)
+
+	return string(passwordHash), err
 }

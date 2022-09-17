@@ -3,6 +3,7 @@ module github.com/jessicamosouza/login-system
 go 1.19
 
 require (
+	github.com/go-passwd/validator v0.0.0-20180902184246-0b4c967e436b
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/lib/pq v1.10.7
 	github.com/twilio/twilio-go v0.26.0
