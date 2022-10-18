@@ -2,27 +2,9 @@
 
 {{template "_head"}}
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-    <title>Login</title>
-</head>
-
 <body>
     <!-- Section: Design Block -->
     <section class="text-center">
-        <!-- Background image -->
-        <div class="p-5 bg-image"></div>
-        <!-- Background image -->
 
         <div class="card mx-4 mx-md-5 shadow-5-strong" style="
             margin-top: -100px;
@@ -34,7 +16,7 @@
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-8">
                         <h2 class="fw-bold mb-5">Login</h2>
-                        <form>
+                        <form method="POST" action="/login">
                             <!-- Email input -->
                             <div class="form-outline mb-4">
                                 <input name="email" type="email" id="form3Example3" class="form-control" />
@@ -48,9 +30,7 @@
                             </div>
 
                             <!-- Submit button -->
-                            <button type="submit" class="btn btn-primary btn-block mb-4">
-                                Login
-                            </button>
+                            <button type="submit" value="Login" class="btn btn-success">Login</button>
 
                             <div>
                                 <p class="mb-0">Don't have an account? <a href="/signup"
