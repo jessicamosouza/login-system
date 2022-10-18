@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -22,8 +23,14 @@ type User struct {
 var temp = template.Must(template.ParseGlob("templates/*.html"))
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	allUsers := models.SearchAllUsers()
-	err := temp.ExecuteTemplate(w, "Index", allUsers)
+	err := temp.ExecuteTemplate(w, "Index", nil)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func Welcome(w http.ResponseWriter, r *http.Request) {
+	err := temp.ExecuteTemplate(w, "Welcome", nil)
 	if err != nil {
 		log.Println(err)
 	}
@@ -36,71 +43,104 @@ func New(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Insert(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == "POST" {
-
-		u := User{
-			FirstName: r.FormValue("fname"),
-			LastName:  r.FormValue("lname"),
-			Email:     r.FormValue("email"),
-			Password:  r.FormValue("password"),
-		}
-
-		err := checkName(u.FirstName)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("First name must contain at least 2 characters."))
-			return
-		}
-
-		err = checkName(u.LastName)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Last name must contain at least 2 characters."))
-			return
-		}
-
-		err = checkEmail(u.Email)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Invalid email."))
-			return
-		}
-
-		err = checkPassword(u.Password)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Invalid password"))
-			return
-		}
-
-		passwordHash, err := generateHash(u.Password)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(err.Error()))
-			return
-		}
-
-		models.InsertUser(u.FirstName, u.LastName, u.Email, passwordHash)
+func Login(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		return
 	}
+
+	l := User{
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
+	}
+
+	result, err := models.GetUser(l.Email, l.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrUserNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(CheckPasswordHash(l.Password, result), result, err)
+	
+	if CheckPasswordHash(l.Password, result) {
+		http.Redirect(w, r, "/welcome", http.StatusMovedPermanently)
+	}
+
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func Insert(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		return
+	}
+
+	u := User{
+		FirstName: r.FormValue("fname"),
+		LastName:  r.FormValue("lname"),
+		Email:     r.FormValue("email"),
+		Password:  r.FormValue("password"),
+	}
+
+	if err := checkUser(&u); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	passwordHash, err := generateHash(u.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	models.InsertUser(u.FirstName, u.LastName, u.Email, passwordHash)
 
 	// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
-func checkName(name string) error {
+// Handlers (Controller) -> Negocios (UseCases) -> Repositório (Acesso a dados (models))
 
-	if len(name) > 2 {
-		return nil
+func checkUser(u *User) error {
+	if checkName(u.FirstName) != nil {
+		return errors.New("first name must contain at least 2 characters")
 	}
-	return errors.New("invalid name")
+	if checkName(u.LastName) != nil {
+		return errors.New("last name must contain at least 2 characters")
+	}
 
+	if checkEmail(u.Email) != nil {
+		return errors.New("invalid email")
+	}
+
+	if checkPassword(u.Password) != nil {
+		return errors.New("invalid password")
+	}
+	return nil
+}
+
+func checkName(name string) error {
+	if len(name) <= 2 {
+		return errors.New("invalid name")
+	}
+	return nil
 }
 
 func checkEmail(email string) error {
-	_, err := mail.ParseAddress(email)
-
+	mail, err := mail.ParseAddress(email)
+	fmt.Println(mail, err)
 	return err
 }
 
