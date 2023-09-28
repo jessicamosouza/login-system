@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"net/mail"
 	"unicode"
@@ -25,21 +24,24 @@ var temp = template.Must(template.ParseGlob("templates/*.html"))
 func Index(w http.ResponseWriter, r *http.Request) {
 	err := temp.ExecuteTemplate(w, "Index", nil)
 	if err != nil {
-		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 }
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
 	err := temp.ExecuteTemplate(w, "Welcome", nil)
 	if err != nil {
-		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 }
 
 func New(w http.ResponseWriter, r *http.Request) {
 	err := temp.ExecuteTemplate(w, "New", nil)
 	if err != nil {
-		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -55,7 +57,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Password: r.FormValue("password"),
 	}
 
-	result, err := models.GetUser(l.Email, l.Password)
+	hashPassword, err := models.GetUser(l.Email, l.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrUserNotFound) {
 			w.WriteHeader(http.StatusNotFound)
@@ -65,15 +67,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(CheckPasswordHash(l.Password, result), result, err)
-	
-	if CheckPasswordHash(l.Password, result) {
+	if checkPasswordHash(l.Password, hashPassword) {
 		http.Redirect(w, r, "/welcome", http.StatusMovedPermanently)
 	}
 
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }

@@ -17,19 +17,21 @@ type User struct {
 	Password  string `json:"password" db:"password"`
 }
 
-func InsertUser(firstName, lastName, email, password string) {
+func InsertUser(firstName, lastName, email, password string) error {
 	db := db.InitDB()
 	defer db.Close()
 
 	addUserDB, err := db.Prepare("insert into users(firstname, lastname, email, password)  values($1,$2,$3,$4)")
 	if err != nil {
-		panic(err.Error())
+		return fmt.Errorf("[models] error preparing insert: %w", err)
 	}
 
 	addUserDB.Exec(firstName, lastName, email, password)
 	if err != nil {
-		panic(err.Error())
+		return fmt.Errorf("[models] error insert: %w", err)
 	}
+
+	return nil
 }
 
 func GetUser(email, password string) (string, error) {
