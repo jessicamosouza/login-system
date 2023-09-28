@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/mail"
 	"unicode"
@@ -49,6 +50,62 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func GetBody(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userData, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
+		return
+	}
+
+	close(r)
+
+	fmt.Println(string(userData))
+
+	_, err = w.Write([]byte("Ok!"))
+	if err != nil {
+		return
+	}
+
+	//u := User{
+	//	FirstName: r.FormValue("fname"),
+	//	LastName:  r.FormValue("lname"),
+	//	Email:     r.FormValue("email"),
+	//	Password:  r.FormValue("password"),
+	//}
+
+	//if err := checkUser(&u); err != nil {
+	//	w.WriteHeader(http.StatusBadRequest)
+	//	w.Write([]byte(err.Error()))
+	//	return
+	//}
+	//
+	//passwordHash, err := generateHash(u.Password)
+	//if err != nil {
+	//	w.WriteHeader(http.StatusBadRequest)
+	//	w.Write([]byte(err.Error()))
+	//	return
+	//}
+	//
+	//models.InsertUser(u.FirstName, u.LastName, u.Email, passwordHash)
+	//
+	//// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
+	//http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
+
+func close(r *http.Request) {
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(r.Body)
 }
 
 // Handlers (Controller) -> Negocios (UseCases) -> Repositório (Acesso a dados (models))

@@ -55,3 +55,31 @@ func TestGetUser(t *testing.T) {
 		}
 	})
 }
+
+func TestUnmarshalUser(t *testing.T) {
+	t.Run("Handle error unmarshalling request body", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodPost, "/", bytes.NewBufferString("Hello"))
+		if err != nil {
+			t.Fatalf("could not create request: %v", err)
+		}
+		rec := httptest.NewRecorder()
+		GetUserData(rec, req)
+		if rec.Code != http.StatusInternalServerError {
+			t.Errorf("expected status %d but got %d", http.StatusInternalServerError, rec.Code)
+		}
+	})
+
+	t.Run("Successful unmarshalling", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodPost, "/",
+			bytes.NewBufferString(`{"fname":"John","lname":"Doe","email":"john@email.com","password":"12345678"}`))
+		if err != nil {
+			t.Fatalf("could not create request: %v", err)
+		}
+
+		rec := httptest.NewRecorder()
+		GetUserData(rec, req)
+		if rec.Code != http.StatusOK {
+			t.Errorf("expected status %d but got %d", http.StatusOK, rec.Code)
+		}
+	})
+}
