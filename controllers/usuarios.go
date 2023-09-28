@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"net/mail"
 	"unicode"
@@ -13,36 +12,10 @@ import (
 )
 
 type User struct {
-	FirstName string `json:"fname" validate:"required,alpha,min=2,max=100"`
-	LastName  string `json:"lname" validate:"required,alpha,min=2,max=100"`
+	FirstName string `json:"firstName" validate:"required,alpha,min=2,max=100"`
+	LastName  string `json:"lastName" validate:"required,alpha,min=2,max=100"`
 	Email     string `json:"email" validate:"required,unique=email,email"`
 	Password  string `json:"password" validate:"required,min=8,password"`
-}
-
-var temp = template.Must(template.ParseGlob("templates/*.html"))
-
-func Index(w http.ResponseWriter, r *http.Request) {
-	err := temp.ExecuteTemplate(w, "Index", nil)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-}
-
-func Welcome(w http.ResponseWriter, r *http.Request) {
-	err := temp.ExecuteTemplate(w, "Welcome", nil)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-}
-
-func New(w http.ResponseWriter, r *http.Request) {
-	err := temp.ExecuteTemplate(w, "New", nil)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -76,39 +49,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
-}
-
-func Insert(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
-		return
-	}
-
-	u := User{
-		FirstName: r.FormValue("fname"),
-		LastName:  r.FormValue("lname"),
-		Email:     r.FormValue("email"),
-		Password:  r.FormValue("password"),
-	}
-
-	if err := checkUser(&u); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	passwordHash, err := generateHash(u.Password)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	models.InsertUser(u.FirstName, u.LastName, u.Email, passwordHash)
-
-	// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
 // Handlers (Controller) -> Negocios (UseCases) -> Repositório (Acesso a dados (models))

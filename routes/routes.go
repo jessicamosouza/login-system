@@ -1,15 +1,11 @@
 package routes
 
 import (
+	"github.com/jessicamosouza/login-system/handlers"
 	"net/http"
-
-	controllers "github.com/jessicamosouza/login-system/controllers"
 )
 
 func LoadRoutes() {
-	http.HandleFunc("/", controllers.Index)
-	http.HandleFunc("/signup", controllers.New)
-	http.HandleFunc("/insert", controllers.Insert)
-	http.HandleFunc("/login", controllers.Login)
-	http.HandleFunc("/welcome", controllers.Welcome)
+	http.HandleFunc("/insert", handlers.GetUserData)
+	//http.HandleFunc("/login", controllers.Login)
 }
