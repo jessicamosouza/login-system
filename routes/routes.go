@@ -6,6 +6,6 @@ import (
 )
 
 func LoadRoutes() {
-	http.HandleFunc("/insert", handlers.GetUserData)
+	http.HandleFunc("/insert", handlers.CreateUserHandler)
 	//http.HandleFunc("/login", controllers.Login)
 }

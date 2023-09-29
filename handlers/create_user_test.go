@@ -21,7 +21,7 @@ func TestGetUser(t *testing.T) {
 			t.Fatalf("could not create request: %v", err)
 		}
 		rec := httptest.NewRecorder()
-		GetUserData(rec, req)
+		CreateUserHandler(rec, req)
 		if rec.Code != http.StatusMethodNotAllowed {
 			t.Errorf("expected status %d but got %d", http.StatusMethodNotAllowed, rec.Code)
 		}
@@ -33,7 +33,7 @@ func TestGetUser(t *testing.T) {
 			t.Fatalf("could not create request: %v", err)
 		}
 		rec := httptest.NewRecorder()
-		GetUserData(rec, req)
+		CreateUserHandler(rec, req)
 		if rec.Code != http.StatusInternalServerError {
 			t.Errorf("expected status %d but got %d", http.StatusInternalServerError, rec.Code)
 		}
@@ -45,7 +45,7 @@ func TestGetUser(t *testing.T) {
 			t.Fatalf("could not create request: %v", err)
 		}
 		rec := httptest.NewRecorder()
-		GetUserData(rec, req)
+		CreateUserHandler(rec, req)
 		if rec.Code != http.StatusOK {
 			t.Errorf("expected status %d but got %d", http.StatusOK, rec.Code)
 		}
@@ -63,7 +63,7 @@ func TestUnmarshalUser(t *testing.T) {
 			t.Fatalf("could not create request: %v", err)
 		}
 		rec := httptest.NewRecorder()
-		GetUserData(rec, req)
+		CreateUserHandler(rec, req)
 		if rec.Code != http.StatusInternalServerError {
 			t.Errorf("expected status %d but got %d", http.StatusInternalServerError, rec.Code)
 		}
@@ -77,7 +77,7 @@ func TestUnmarshalUser(t *testing.T) {
 		}
 
 		rec := httptest.NewRecorder()
-		GetUserData(rec, req)
+		CreateUserHandler(rec, req)
 		if rec.Code != http.StatusOK {
 			t.Errorf("expected status %d but got %d", http.StatusOK, rec.Code)
 		}
