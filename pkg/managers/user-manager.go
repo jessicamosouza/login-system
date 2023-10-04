@@ -7,6 +7,8 @@ import (
 	"github.com/jessicamosouza/login-system/pkg/models"
 	"github.com/jessicamosouza/login-system/pkg/security"
 	"github.com/jessicamosouza/login-system/pkg/validators"
+	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 type User struct {
@@ -40,6 +42,40 @@ func CreateUser(user User) error {
 
 	return nil
 }
+
+// Login TODO: refactor this function
+func Login(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		return
+	}
+
+	l := User{
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
+	}
+
+	hashPassword, err := models.GetUser(l.Email, l.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrUserNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if checkPasswordHash(l.Password, hashPassword) {
+		http.Redirect(w, r, "/welcome", http.StatusMovedPermanently)
+	}
+
+}
+
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
 func connectDatabase() (*sql.DB, error) {
 	db := db.InitDB()
 	if db == nil {
