@@ -16,8 +16,11 @@ type User struct {
 	Password  string `json:"password" db:"password"`
 }
 
-func CreateUser(initDB *sql.DB, firstName, lastName, email, password string) error {
-	addUserDB, err := initDB.Prepare("insert into users(firstname, lastname, email, password)  values($1,$2,$3,$4)")
+func CreateUser(firstName, lastName, email, password string) error {
+	db := db.InitDB()
+	defer db.Close()
+
+	addUserDB, err := db.Prepare("insert into users(first_name, last_name, email, password)  values($1,$2,$3,$4)")
 	if err != nil {
 		return fmt.Errorf("[models] error preparing insert: %w", err)
 	}
@@ -34,7 +37,7 @@ func GetUser(email, password string) (string, error) {
 	db := db.InitDB()
 	defer db.Close()
 
-	getUserDB := db.QueryRow("SELECT password FROM users WHERE email LIKE $1;", email)
+	getUserDB := db.QueryRow("SELECT password FROM User WHERE email LIKE $1;", email)
 	storedUserData := &User{}
 
 	err := getUserDB.Scan(&storedUserData.Password)

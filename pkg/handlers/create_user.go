@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/jessicamosouza/login-system/pkg/managers"
 	"net/http"
 )
@@ -24,7 +23,6 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Error unmarshalling request body", http.StatusInternalServerError)
 	}
-	fmt.Println(user)
 
 	err := managers.CreateUser(managers.User{
 		FirstName: user.FirstName,
@@ -32,13 +30,6 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		Email:     user.Email,
 		Password:  user.Password,
 	})
-
-	//switch {
-	//case errors.Is(err, managers.ErrUserAlreadyExists):
-	//case errors.Is(err, managers.2):
-	//case errors.Is(err, managers.3):
-	//
-	//}
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

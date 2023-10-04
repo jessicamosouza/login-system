@@ -8,7 +8,6 @@ import (
 	"github.com/jessicamosouza/login-system/pkg/security"
 	"github.com/jessicamosouza/login-system/pkg/validators"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 )
 
 type User struct {
@@ -29,13 +28,7 @@ func CreateUser(user User) error {
 		return err
 	}
 
-	db, err := connectDatabase()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	err = models.CreateUser(db, user.FirstName, user.LastName, user.Email, passwordHash)
+	err = models.CreateUser(user.FirstName, user.LastName, user.Email, passwordHash)
 	if err != nil {
 		return err
 	}
@@ -43,32 +36,25 @@ func CreateUser(user User) error {
 	return nil
 }
 
-// Login TODO: refactor this function
-func Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
-		return
+func Login(user User) error {
+	err := validators.Validate(validators.User(user))
+	if err != nil {
+		return err
 	}
 
-	l := User{
-		Email:    r.FormValue("email"),
-		Password: r.FormValue("password"),
-	}
-
-	hashPassword, err := models.GetUser(l.Email, l.Password)
+	hashPassword, err := models.GetUser(user.Email, user.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrUserNotFound) {
-			w.WriteHeader(http.StatusNotFound)
-			return
+			return err
 		}
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return err
 	}
 
-	if checkPasswordHash(l.Password, hashPassword) {
-		http.Redirect(w, r, "/welcome", http.StatusMovedPermanently)
+	if checkPasswordHash(user.Password, hashPassword) {
+		return nil
 	}
 
+	return errors.New("invalid password")
 }
 
 func checkPasswordHash(password, hash string) bool {
