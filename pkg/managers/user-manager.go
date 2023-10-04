@@ -61,11 +61,3 @@ func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
-
-func connectDatabase() (*sql.DB, error) {
-	db := db.InitDB()
-	if db == nil {
-		return nil, errors.New("failed to initialize the database connection")
-	}
-	return db, nil
-}
