@@ -1,6 +1,28 @@
-# Sign Up and Login System
+## Sign Up and Login System
+
+A secure authentication system built with Golang, featuring sign-up and login functionalities. User data is stored in a Postgres database and passwords are persisted using bcrypt.
+
+### Features
+    
+- [x] Sign Up
+- [x] Login
+- [x] Password Hashing
+- [x] Postgres Database
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies
+    ```bash
+    go get -u github.com/gorilla/mux
+    go get -u github.com/lib/pq
+    go get -u github.com/joho/godotenv
+    ```
+3. Run the application
+    ```bash
+    go run main.go
+    ```
+   
+### Flow Diagram
 
 [![](https://mermaid.ink/img/pako:eNp9kcFqwzAMhl_FGLJcuhfwoZc1x8FY2U65aPGfTpA4raxslJB3n72UrqO0Phjz6ZMlock2g4d1tigmDqzOTKV-okfpynYQRC3nuSjqEHEYERpsmHZCfR1MOnsS5Yb3FNS8Rcg13R6j4mRn43G9XpAzVVCI2UCJu2gezHb86FkXdXEu5FfsOGb_r8zZycil9KZBjOY5XbTDnZIZBuqRar5QjN-D-BtV36ljTwrzJPAIytTFRaVOL6EhgfnK9hK-3d8SRxdxlc_h_g-VyCD_50PwdmV7SE_s0xanjGv7u8HauvT0aGnstLZ1mJNKow7bY2isUxmxsuM-z3daqnVt6uVMK886yAnOP8-1u50?type=png)](https://mermaid.live/edit#pako:eNp9kcFqwzAMhl_FGLJcuhfwoZc1x8FY2U65aPGfTpA4raxslJB3n72UrqO0Phjz6ZMlock2g4d1tigmDqzOTKV-okfpynYQRC3nuSjqEHEYERpsmHZCfR1MOnsS5Yb3FNS8Rcg13R6j4mRn43G9XpAzVVCI2UCJu2gezHb86FkXdXEu5FfsOGb_r8zZycil9KZBjOY5XbTDnZIZBuqRar5QjN-D-BtV36ljTwrzJPAIytTFRaVOL6EhgfnK9hK-3d8SRxdxlc_h_g-VyCD_50PwdmV7SE_s0xanjGv7u8HauvT0aGnstLZ1mJNKow7bY2isUxmxsuM-z3daqnVt6uVMK886yAnOP8-1u50)
-
-
-[![](https://mermaid.ink/img/pako:eNp9k8Fu2zAMhl-F0GGn9pDklsOAOc4SdwkwLOsu8w5MzNgCbMmQlBZF0XcfRdmt0wK9GDb5kT_5y3pWJ1uRWqraYd_A76w0AN_-lurekyvVP7i9_QoZf68aaz3BQdcG7nuwDna21oaRWJEJt2JuAIb4SuI5x9cmkIOcAurWwxc4XI6dDgOWC7aeMbchQw4DK2E7ptezlJ_HOWx31IbgJ3r_aF0VW03IeSIXTG7RNzDgFeQYcIQWaaos6h2CdQTCpk6gjcBH9DSOlw0DMP-Lau3jKtEgeNShkWJWGCcaVaTkO5fk2vctPvHKpxN5D3t-YE1X1m2Ymxq6kej21bioZrAjHvKdznZYZi7DBafp4Xqfs7Pdx42SUcVsYqkoTRbhBmPDampykdwo5p-ZXAwCiyTQI7ssbonhlUw4ouk8Cib_YKurePorZsgEja0fKYHuYru3HEjBQNwJ8WPieM4iR4uvXqUeu3c9CvMw6bITZj_psnaOf_e3U1M3qiPXoa743jzHmlKFhjrOLfn1zPt59qo0L0ziJdjDkzmpZXAXulGXPu6Xa-QL110H15Vmb9TyzENxkORzn66n3NKX_zeoJ4A?type=png)](https://mermaid.live/edit#pako:eNp9k8Fu2zAMhl-F0GGn9pDklsOAOc4SdwkwLOsu8w5MzNgCbMmQlBZF0XcfRdmt0wK9GDb5kT_5y3pWJ1uRWqraYd_A76w0AN_-lurekyvVP7i9_QoZf68aaz3BQdcG7nuwDna21oaRWJEJt2JuAIb4SuI5x9cmkIOcAurWwxc4XI6dDgOWC7aeMbchQw4DK2E7ptezlJ_HOWx31IbgJ3r_aF0VW03IeSIXTG7RNzDgFeQYcIQWaaos6h2CdQTCpk6gjcBH9DSOlw0DMP-Lau3jKtEgeNShkWJWGCcaVaTkO5fk2vctPvHKpxN5D3t-YE1X1m2Ymxq6kej21bioZrAjHvKdznZYZi7DBafp4Xqfs7Pdx42SUcVsYqkoTRbhBmPDampykdwo5p-ZXAwCiyTQI7ssbonhlUw4ouk8Cib_YKurePorZsgEja0fKYHuYru3HEjBQNwJ8WPieM4iR4uvXqUeu3c9CvMw6bITZj_psnaOf_e3U1M3qiPXoa743jzHmlKFhjrOLfn1zPt59qo0L0ziJdjDkzmpZXAXulGXPu6Xa-QL110H15Vmb9TyzENxkORzn66n3NKX_zeoJ4A)
