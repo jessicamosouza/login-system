@@ -1,4 +1,4 @@
-package controllers
+package ignore_this
 
 import (
 	"errors"
@@ -73,26 +73,6 @@ func GetBody(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//u := User{
-	//	FirstName: r.FormValue("fname"),
-	//	LastName:  r.FormValue("lname"),
-	//	Email:     r.FormValue("email"),
-	//	Password:  r.FormValue("password"),
-	//}
-
-	//if err := checkUser(&u); err != nil {
-	//	w.WriteHeader(http.StatusBadRequest)
-	//	w.Write([]byte(err.Error()))
-	//	return
-	//}
-	//
-	//passwordHash, err := generateHash(u.Password)
-	//if err != nil {
-	//	w.WriteHeader(http.StatusBadRequest)
-	//	w.Write([]byte(err.Error()))
-	//	return
-	//}
-	//
 	//models.InsertUser(u.FirstName, u.LastName, u.Email, passwordHash)
 	//
 	//// mensagem de registrado com sucesso, então redirecionar para login ou pagina inicial
