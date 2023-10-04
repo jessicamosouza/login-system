@@ -1,14 +1,9 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
-	"github.com/jessicamosouza/login-system/routes"
+	"github.com/jessicamosouza/login-system/cmd"
 )
 
 func main() {
-	routes.LoadRoutes()
-	log.Fatal(http.ListenAndServe(":8000", nil))
-
+	cmd.Run()
 }

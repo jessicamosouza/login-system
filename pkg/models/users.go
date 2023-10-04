@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
-	"github.com/jessicamosouza/login-system/db"
+	"github.com/jessicamosouza/login-system/pkg/db"
 )
 
 var ErrUserNotFound = errors.New("[models] user not found")

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/jessicamosouza/login-system/handlers"
+	"github.com/jessicamosouza/login-system/pkg/handlers"
 	"net/http"
 )
 

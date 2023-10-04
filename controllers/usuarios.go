@@ -3,12 +3,12 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"github.com/jessicamosouza/login-system/pkg/models"
 	"io"
 	"net/http"
 	"net/mail"
 	"unicode"
 
-	"github.com/jessicamosouza/login-system/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
