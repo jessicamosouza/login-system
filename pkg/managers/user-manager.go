@@ -1,9 +1,7 @@
 package managers
 
 import (
-	"database/sql"
 	"errors"
-	"github.com/jessicamosouza/login-system/pkg/db"
 	"github.com/jessicamosouza/login-system/pkg/models"
 	"github.com/jessicamosouza/login-system/pkg/security"
 	"github.com/jessicamosouza/login-system/pkg/validators"
@@ -18,7 +16,7 @@ type User struct {
 }
 
 func CreateUser(user User) error {
-	err := validators.Validate(validators.User(user))
+	err := validators.Validate(validators.User(user), true)
 	if err != nil {
 		return err
 	}
@@ -37,7 +35,7 @@ func CreateUser(user User) error {
 }
 
 func Login(user User) error {
-	err := validators.Validate(validators.User(user))
+	err := validators.Validate(validators.User(user), false)
 	if err != nil {
 		return err
 	}

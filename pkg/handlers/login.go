@@ -12,12 +12,16 @@ type User struct {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method != http.MethodGet {
 		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		return
 	}
 
-	var user CreateUserPayload
+	if r.Body == nil {
+		http.Error(w, "Empty body", http.StatusBadRequest)
+	}
+
+	var user User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Error unmarshalling request body", http.StatusInternalServerError)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func InitDB() *sql.DB {
-	conection := "user=null dbname=postgres password=disable host=localhost sslmode=disable"
+	conection := "user=postgres dbname=postgres password=login_system host=localhost sslmode=disable"
 	db, err := sql.Open("postgres", conection)
 	if err != nil {
 		panic(err)

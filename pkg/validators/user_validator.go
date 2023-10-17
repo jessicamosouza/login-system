@@ -14,19 +14,23 @@ type User struct {
 	Password  string
 }
 
-func Validate(user User) error {
-	if err := CheckName(user.FirstName); err != nil {
-		return fmt.Errorf("first name validation failed: %w", err)
-	}
-	if err := CheckName(user.LastName); err != nil {
-		return fmt.Errorf("last name validation failed: %w", err)
-	}
+func Validate(user User, isSignUp bool) error {
 	if err := CheckEmail(user.Email); err != nil {
 		return fmt.Errorf("email validation failed: %w", err)
 	}
 	if err := checkPassword(user.Password); err != nil {
 		return fmt.Errorf("password validation failed: %w", err)
 	}
+
+	if isSignUp {
+		if err := CheckName(user.FirstName); err != nil {
+			return fmt.Errorf("first name validation failed: %w", err)
+		}
+		if err := CheckName(user.LastName); err != nil {
+			return fmt.Errorf("last name validation failed: %w", err)
+		}
+	}
+
 	return nil
 }
 
