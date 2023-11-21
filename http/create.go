@@ -22,6 +22,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user CreateUserPayload
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Error unmarshalling request body", http.StatusInternalServerError)
+		return
 	}
 
 	err := userops.CreateUser(userops.User{
