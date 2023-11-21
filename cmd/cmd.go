@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/jessicamosouza/login-system/pkg/routes"
+	"github.com/jessicamosouza/login-system/routes"
 	"log"
 	"net/http"
 )

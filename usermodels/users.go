@@ -1,13 +1,13 @@
-package models
+package usermodels
 
 import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jessicamosouza/login-system/pkg/db"
+	"github.com/jessicamosouza/login-system/db"
 )
 
-var ErrUserNotFound = errors.New("[models] user not found")
+var ErrUserNotFound = errors.New("[usermodels] user not found")
 
 type User struct {
 	FirstName string `json:"fname" db:"firstname"`
@@ -22,12 +22,12 @@ func CreateUser(firstName, lastName, email, password string) error {
 
 	addUserDB, err := db.Prepare("INSERT INTO \"User\" (first_name, last_name, email, password)  values($1,$2,$3,$4)")
 	if err != nil {
-		return fmt.Errorf("[models] error preparing insert: %w", err)
+		return fmt.Errorf("[usermodels] error preparing insert: %w", err)
 	}
 
 	addUserDB.Exec(firstName, lastName, email, password)
 	if err != nil {
-		return fmt.Errorf("[models] error insert: %w", err)
+		return fmt.Errorf("[usermodels] error insert: %w", err)
 	}
 
 	return nil
@@ -45,7 +45,7 @@ func GetUser(email, password string) (string, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", ErrUserNotFound
 		}
-		return "", fmt.Errorf("[models] error finding user password: %w", err)
+		return "", fmt.Errorf("[usermodels] error finding user password: %w", err)
 	}
 	println("stored: ", storedUserData.Password)
 

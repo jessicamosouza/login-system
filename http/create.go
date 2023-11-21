@@ -1,8 +1,8 @@
-package handlers
+package http
 
 import (
 	"encoding/json"
-	"github.com/jessicamosouza/login-system/pkg/managers"
+	"github.com/jessicamosouza/login-system/userops"
 	"net/http"
 )
 
@@ -24,7 +24,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error unmarshalling request body", http.StatusInternalServerError)
 	}
 
-	err := managers.CreateUser(managers.User{
+	err := userops.CreateUser(userops.User{
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
@@ -37,5 +37,5 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("User created successfully!"))
+	w.Write([]byte("LoginUserPayload created successfully!"))
 }

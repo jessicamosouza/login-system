@@ -1,10 +1,10 @@
-package managers
+package userops
 
 import (
 	"errors"
-	"github.com/jessicamosouza/login-system/pkg/models"
-	"github.com/jessicamosouza/login-system/pkg/security"
-	"github.com/jessicamosouza/login-system/pkg/validators"
+	"github.com/jessicamosouza/login-system/security"
+	"github.com/jessicamosouza/login-system/usermodels"
+	"github.com/jessicamosouza/login-system/uservalidation"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,7 +16,7 @@ type User struct {
 }
 
 func CreateUser(user User) error {
-	err := validators.Validate(validators.User(user), true)
+	err := uservalidation.Validate(uservalidation.User(user), true)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func CreateUser(user User) error {
 		return err
 	}
 
-	err = models.CreateUser(user.FirstName, user.LastName, user.Email, passwordHash)
+	err = usermodels.CreateUser(user.FirstName, user.LastName, user.Email, passwordHash)
 	if err != nil {
 		return err
 	}
@@ -35,14 +35,14 @@ func CreateUser(user User) error {
 }
 
 func Login(user User) error {
-	err := validators.Validate(validators.User(user), false)
+	err := uservalidation.Validate(uservalidation.User(user), false)
 	if err != nil {
 		return err
 	}
 
-	hashPassword, err := models.GetUser(user.Email, user.Password)
+	hashPassword, err := usermodels.GetUser(user.Email, user.Password)
 	if err != nil {
-		if errors.Is(err, models.ErrUserNotFound) {
+		if errors.Is(err, usermodels.ErrUserNotFound) {
 			return err
 		}
 		return err
@@ -59,3 +59,13 @@ func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
+
+//func Delete(user User) error {
+//	err := uservalidation.Validate(uservalidation.User(user), false)
+//	if err != nil {
+//		return err
+//	}
+//
+//	// ver sobre cache para user continuar logado
+//
+//}
