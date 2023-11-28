@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/mail"
+	"regexp"
 	"unicode"
 )
 
@@ -35,9 +36,16 @@ func Validate(user User, isSignUp bool) error {
 }
 
 func CheckName(name string) error {
-	if len(name) < 2 {
+	re := regexp.MustCompile(`[^a-zA-ZäöüÄÖÜáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛãñõÃÑÕçÇ ^\p{L}'-]`)
+
+	if name == "" {
+		return errors.New("name cannot be empty")
+	} else if len(name) < 2 {
 		return errors.New("name must contain at least 2 characters")
+	} else if re.MatchString(name) {
+		return errors.New("name cannot contain special characters")
 	}
+
 	return nil
 }
 
