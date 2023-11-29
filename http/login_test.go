@@ -2,85 +2,82 @@ package http
 
 import (
 	"bytes"
+	"fmt"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
-func TestLogin(t *testing.T) {
-	t.Run("Only GET method allowed", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "/", nil)
-		if err != nil {
-			t.Fatalf("could not create request: %v", err)
-		}
-		rec := httptest.NewRecorder()
-		LoginUserHandler(rec, req)
-		if rec.Code != http.StatusMovedPermanently {
-			t.Errorf("expected status %d but got %d", http.StatusMethodNotAllowed, rec.Code)
-		}
-	})
+func TestLoginUserHandler(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Errors", testLoginErrors)
+	t.Run("Success", testLoginSuccess)
+}
+
+func testLoginErrors(t *testing.T) {
+	t.Parallel()
+
+	methodsToTest := []string{http.MethodDelete, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodOptions}
+
+	for _, method := range methodsToTest {
+		t.Run(fmt.Sprintf("Method %s not allowed", method), func(t *testing.T) {
+			t.Parallel()
+			req, err := http.NewRequest(method, "/", nil)
+			require.NoError(t, err)
+
+			resp := assertResponseStatus(t, req, http.StatusMovedPermanently)
+			require.Equal(t, "", resp)
+		})
+	}
 
 	t.Run("Handle error reading request body", func(t *testing.T) {
+		t.Parallel()
 		req, err := http.NewRequest(http.MethodGet, "/", &ErrorReader{})
-		if err != nil {
-			t.Fatalf("could not create request: %v", err)
-		}
-		rec := httptest.NewRecorder()
-		LoginUserHandler(rec, req)
-		if rec.Code != http.StatusInternalServerError {
-			t.Errorf("expected status %d but got %d", http.StatusInternalServerError, rec.Code)
-		}
-	})
+		require.NoError(t, err)
 
-	t.Run("Successful body read", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/",
-			bytes.NewBufferString(`{"email":"john@doe.com","password":"Password123!"}`))
-		if err != nil {
-			t.Fatalf("could not create request: %v", err)
-		}
-
-		rec := httptest.NewRecorder()
-		LoginUserHandler(rec, req)
-		if rec.Code != http.StatusOK {
-			t.Errorf("expected status %d but got %d", http.StatusOK, rec.Code)
-		}
-
-		resp := rec.Body.String()
-		if resp != "LoginUserPayload logged successfully!" {
-			t.Errorf("expected response to be 'LoginUserPayload logged successfully!' but got %s", resp)
-		}
+		resp := assertResponseStatus(t, req, http.StatusInternalServerError)
+		require.Equal(t, "Error unmarshalling request body\nemail validation failed: invalid email\n", resp)
 	})
 
 	t.Run("Empty body", func(t *testing.T) {
+		t.Parallel()
 		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		if err != nil {
-			t.Fatalf("could not create request: %v", err)
-		}
+		require.NoError(t, err)
 
-		rec := httptest.NewRecorder()
-		LoginUserHandler(rec, req)
-		if rec.Code != http.StatusBadRequest {
-			t.Errorf("expected status %d but got %d", http.StatusBadRequest, rec.Code)
-		}
-
-		resp := rec.Body.String()
-		if strings.TrimSpace(resp) != "Empty body" {
-			t.Errorf("expected response to be 'Empty body' but got %s", resp)
-		}
+		resp := assertResponseStatus(t, req, http.StatusBadRequest)
+		require.Equal(t, "Empty body\n", resp)
 	})
 
 	t.Run("Error finding user", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/", bytes.NewBufferString(`{"email":"maria@email.com",
-"password":"Password123!"}`))
-		if err != nil {
-			t.Fatalf("could not create request: %v", err)
-		}
+		t.Parallel()
+		req, err := http.NewRequest(http.MethodGet, "/", bytes.NewBufferString(
+			`{"email":"maria@email.com", "password":"Password123!"}`))
+		require.NoError(t, err)
 
-		rec := httptest.NewRecorder()
-		LoginUserHandler(rec, req)
-		if rec.Code != http.StatusBadRequest {
-			t.Errorf("expected status %d but got %d", http.StatusBadRequest, rec.Code)
-		}
+		resp := assertResponseStatus(t, req, http.StatusBadRequest)
+		require.Equal(t, "[usermodels] user not found\n", resp)
 	})
+}
+
+func testLoginSuccess(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Successful body read", func(t *testing.T) {
+		t.Parallel()
+		req, err := http.NewRequest(http.MethodGet, "/",
+			bytes.NewBufferString(`{"email":"john@doe.com","password":"Password123!"}`))
+		require.NoError(t, err)
+
+		resp := assertResponseStatus(t, req, http.StatusOK)
+		require.Equal(t, "LoginUserPayload logged successfully!", resp)
+	})
+}
+
+func assertResponseStatus(t *testing.T, req *http.Request, status int) string {
+	rec := httptest.NewRecorder()
+	LoginUserHandler(rec, req)
+	require.Equal(t, status, rec.Code)
+	return rec.Body.String()
 }
