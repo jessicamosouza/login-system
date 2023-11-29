@@ -35,9 +35,9 @@ func Validate(user User, isSignUp bool) error {
 	return nil
 }
 
-func CheckName(name string) error {
-	re := regexp.MustCompile(`[^a-zA-ZäöüÄÖÜáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛãñõÃÑÕçÇ ^\p{L}'-]`)
+var re = regexp.MustCompile(`[^a-zA-ZäöüÄÖÜáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛãñõÃÑÕçÇ ^\p{L}'-]`)
 
+func CheckName(name string) error {
 	if name == "" {
 		return errors.New("name cannot be empty")
 	} else if len(name) < 2 {

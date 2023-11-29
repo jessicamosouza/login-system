@@ -6,69 +6,54 @@ import (
 )
 
 func TestValidate(t *testing.T) {
-	type args struct {
-		user     User
-		isSignUp bool
-	}
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name          string
+		inputUser     User
+		inputIsSignUp bool
+		outputErr     bool
 	}{
 		{
 			"Invalid first name",
-			args{
-				User{"J", "Doe", "john@doe.com", "Password123!"},
-				true,
-			},
+			User{"J", "Doe", "john@doe.com", "Password123!"},
+			true,
 			true,
 		},
 		{
 			"Invalid last name",
-			args{
-				User{"John", "D", "john@doe.com", "Password123!"},
-				true,
-			},
+			User{"John", "D", "john@doe.com", "Password123!"},
+			true,
 			true,
 		},
 
 		{
 			"Invalid email",
-			args{
-				User{"John", "Doe", "johndoe.com", "Password123!"},
-				true,
-			},
+			User{"John", "Doe", "johndoe.com", "Password123!"},
+			true,
 			true,
 		},
 		{
 			"Invalid password",
-			args{
-				User{"John", "Doe", "john@doe.com", "123"},
-				true,
-			},
+			User{"John", "Doe", "john@doe.com", "123"},
+			true,
 			true,
 		},
 		{
 			"Valid User - sign up",
-			args{
-				User{"John", "Doe", "john@doe.com", "Password123!"},
-				true,
-			},
+			User{"John", "Doe", "john@doe.com", "Password123!"},
+			true,
 			false,
 		},
 		{
 			"Valid User - login",
-			args{
-				User{"", "", "john@doe.com", "Password123!"},
-				false,
-			},
+			User{"", "", "john@doe.com", "Password123!"},
+			false,
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Validate(tt.args.user, tt.args.isSignUp); (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, expectedError %v", err, tt.wantErr)
+			if err := Validate(tt.inputUser, tt.inputIsSignUp); (err != nil) != tt.outputErr {
+				t.Errorf("Validate() error = %v, expectedError %v", err, tt.outputErr)
 			}
 		})
 	}
@@ -163,7 +148,12 @@ func TestCheckName(t *testing.T) {
 		},
 	}
 
-	executeTestCases(t, testCases)
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			resp := tt.testFunc(tt.input)
+			validateResponse(t, resp, tt.expectedError)
+		})
+	}
 }
 func TestCheckEmail(t *testing.T) {
 	testCases := []struct {
@@ -229,7 +219,12 @@ func TestCheckEmail(t *testing.T) {
 		},
 	}
 
-	executeTestCases(t, testCases)
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			resp := tt.testFunc(tt.input)
+			validateResponse(t, resp, tt.expectedError)
+		})
+	}
 }
 
 func TestCheckPassword(t *testing.T) {
@@ -300,16 +295,6 @@ func TestCheckPassword(t *testing.T) {
 			checkPassword,
 		},
 	}
-	executeTestCases(t, testCases)
-
-}
-
-func executeTestCases[T any](t *testing.T, testCases []struct {
-	name          string
-	input         T
-	expectedError error
-	testFunc      func(T) error
-}) {
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			resp := tt.testFunc(tt.input)
