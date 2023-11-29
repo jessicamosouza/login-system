@@ -19,6 +19,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Body == nil {
 		http.Error(w, "Empty body", http.StatusBadRequest)
+		return
 	}
 
 	var user LoginUserPayload
